@@ -14,6 +14,7 @@ import {
 import { Product } from '../../types';
 import { ProductCard } from '../../components/customer/ProductCard';
 import { useLocation, POPULAR_LOCALITIES } from '../../context/LocationContext';
+import { SEO } from '../../components/common/SEO';
 
 export const ProductSearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -83,6 +84,10 @@ export const ProductSearchPage: React.FC = () => {
 
   return (
     <div className="space-y-8 pb-16">
+      <SEO
+        title="Compare Products & Prices"
+        description="Search products, compare live prices across local shops, and check real-time neighborhood stock."
+      />
       
       {/* Header Banner */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/80 shadow-md">

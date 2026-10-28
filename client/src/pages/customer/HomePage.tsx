@@ -34,6 +34,7 @@ import { Product, Shop, Category } from '../../types';
 import { ProductCard } from '../../components/customer/ProductCard';
 import { ShopCard } from '../../components/customer/ShopCard';
 import { useLocation } from '../../context/LocationContext';
+import { SEO } from '../../components/common/SEO';
 
 export const HomePage: React.FC = () => {
   const { currentLocality, setIsPickerOpen } = useLocation();
@@ -157,6 +158,10 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="space-y-8 sm:space-y-10 pb-16">
+      <SEO
+        title="Local Market Shopping"
+        description="Discover nearby neighborhood shops, compare product prices, check real-time stock, and choose fast home delivery or instant reserve & collect with eBazaar."
+      />
       
       {/* 1. CLEAN MODERN SEARCH CONSOLE */}
       <section className="bg-white rounded-2xl border border-stone-200/80 shadow-xs p-3.5 sm:p-4 transition-all">

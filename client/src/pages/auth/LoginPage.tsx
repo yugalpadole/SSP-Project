@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types';
+import { SEO } from '../../components/common/SEO';
 
 export const LoginPage: React.FC = () => {
   const { user, login } = useAuth();
@@ -128,6 +129,10 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="min-h-[85vh] flex flex-col items-center justify-center py-10 px-4 sm:px-6 lg:px-8">
+      <SEO
+        title={`Sign In (${isCustomer ? 'Customer' : 'Shopkeeper'})`}
+        description="Sign in to your eBazaar account to shop from local stores or manage your shopkeeper console."
+      />
       {/* Return to Homepage Button */}
       <div className="max-w-md w-full mb-3 flex items-center justify-between">
         <Link

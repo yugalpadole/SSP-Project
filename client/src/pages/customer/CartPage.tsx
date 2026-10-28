@@ -13,6 +13,7 @@ import {
   Truck
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { SEO } from '../../components/common/SEO';
 
 export const CartPage: React.FC = () => {
   const { items, activeShopName, activeShopId, subtotal, totalItems, updateQuantity, removeFromCart, clearCart } = useCart();
@@ -21,6 +22,7 @@ export const CartPage: React.FC = () => {
   if (items.length === 0) {
     return (
       <div className="glass-panel p-12 text-center rounded-3xl max-w-lg mx-auto my-16 border border-white shadow-xl">
+        <SEO title="My Shopping Cart" description="Review items in your eBazaar shopping cart and proceed to checkout." />
         <div className="w-20 h-20 rounded-full bg-emerald-100/70 text-emerald-700 flex items-center justify-center mx-auto mb-4">
           <ShoppingBag size={36} />
         </div>
@@ -41,6 +43,10 @@ export const CartPage: React.FC = () => {
 
   return (
     <div className="space-y-8 pb-16">
+      <SEO
+        title={`Shopping Cart (${totalItems})`}
+        description="Review selected items from your neighborhood shop and choose instant reserve & collect or home delivery."
+      />
       
       {/* Header */}
       <div className="glass-panel p-6 rounded-3xl border border-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">

@@ -4,6 +4,7 @@ import { Search, MapPin, Filter, Store, SlidersHorizontal, RefreshCw } from 'luc
 import { Shop } from '../../types';
 import { ShopCard } from '../../components/customer/ShopCard';
 import { useLocation, POPULAR_LOCALITIES } from '../../context/LocationContext';
+import { SEO } from '../../components/common/SEO';
 
 export const ShopDiscoveryPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,6 +57,10 @@ export const ShopDiscoveryPage: React.FC = () => {
 
   return (
     <div className="space-y-8 pb-16">
+      <SEO
+        title="Discover Neighborhood Shops"
+        description="Browse verified local shopkeepers in your area, check live store inventory, and reserve items for instant pickup."
+      />
       
       {/* Page Header */}
       <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/80 shadow-md">

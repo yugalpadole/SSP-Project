@@ -16,6 +16,7 @@ import {
 import { Category, Product, Shop } from '../../types';
 import { ProductCard } from '../../components/customer/ProductCard';
 import { ShopCard } from '../../components/customer/ShopCard';
+import { SEO } from '../../components/common/SEO';
 
 export const CategoriesPage: React.FC = () => {
   const { slug } = useParams<{ slug?: string }>();
@@ -84,6 +85,10 @@ export const CategoriesPage: React.FC = () => {
   if (slug && selectedCategory) {
     return (
       <div className="space-y-10 pb-16">
+        <SEO
+          title={`${selectedCategory.name} - Local Categories`}
+          description={selectedCategory.description || `Browse fresh ${selectedCategory.name} from local neighborhood stores on eBazaar.`}
+        />
         {/* Category Header */}
         <div className="glass-panel p-6 sm:p-10 rounded-3xl border border-white/80 shadow-md">
           <div className="flex items-center gap-2 text-xs text-stone-500 mb-3">
@@ -161,6 +166,10 @@ export const CategoriesPage: React.FC = () => {
   // Categories Overview Page
   return (
     <div className="space-y-10 pb-16">
+      <SEO
+        title="Product Categories"
+        description="Explore local shopping categories on eBazaar: Groceries, Fresh Produce, Electronics, Fashion, and Daily Essentials."
+      />
       <div className="glass-panel p-6 sm:p-10 rounded-3xl border border-white/80 shadow-md">
         <div className="max-w-2xl">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 uppercase tracking-wider mb-2">

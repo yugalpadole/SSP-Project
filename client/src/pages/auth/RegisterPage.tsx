@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { User, Store, ShieldCheck, ArrowRight, AlertCircle, ShoppingBag, ArrowLeft, Home, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types';
+import { SEO } from '../../components/common/SEO';
 
 export const RegisterPage: React.FC = () => {
   const { register } = useAuth();
@@ -65,6 +66,10 @@ export const RegisterPage: React.FC = () => {
 
   return (
     <div className="min-h-[90vh] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <SEO
+        title="Create Account"
+        description="Join eBazaar as a Customer or Shopkeeper. Connect with local markets digitally."
+      />
       {/* Return to Homepage Button */}
       <div className="max-w-2xl w-full mb-3 flex items-center justify-between">
         <Link
