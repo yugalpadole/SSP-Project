@@ -58,10 +58,11 @@ export const HomePage: React.FC = () => {
       image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=400&q=80',
       typicalAppPrice: 48,
       shops: [
-        { name: 'Sharma Fresh Veggies & Fruits', price: 32, stock: 'Fresh Stock (45 kg)', isBest: true, locality: 'Yevalewadi' },
+        { name: 'Khadakwasla Fresh Mart & Organics', price: 28, stock: 'Fresh Harvest (50 kg)', isBest: true, locality: 'Khadakwasla' },
+        { name: 'Sharma Fresh Veggies & Fruits', price: 32, stock: 'Fresh Stock (45 kg)', isBest: false, locality: 'Yevalewadi' },
         { name: 'Green Grocers Supermarket', price: 35, stock: 'Available (60 kg)', isBest: false, locality: 'Khadakwasla' },
       ],
-      maxSavings: 'Save ₹16 (33% less than app prices)'
+      maxSavings: 'Save ₹20 (41% less than app prices)'
     },
     {
       itemName: 'Organic Sharbati Whole Wheat Atta (5 kg)',
@@ -69,30 +70,46 @@ export const HomePage: React.FC = () => {
       image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80',
       typicalAppPrice: 290,
       shops: [
-        { name: 'Green Grocers Supermarket', price: 255, stock: 'In Stock (24 bags)', isBest: true, locality: 'Khadakwasla' },
+        { name: 'Apna Kirana & Daily Mart', price: 245, stock: 'In Stock (40 bags)', isBest: true, locality: 'Undri & Pisoli' },
+        { name: 'Green Grocers Supermarket', price: 255, stock: 'In Stock (24 bags)', isBest: false, locality: 'Khadakwasla' },
         { name: 'Sharma Fresh Veggies & Fruits', price: 260, stock: 'In Stock (18 bags)', isBest: false, locality: 'Yevalewadi' },
       ],
-      maxSavings: 'Save ₹35 (12% less than app prices)'
+      maxSavings: 'Save ₹45 (15% less than app prices)'
     },
     {
-      itemName: 'Himachal Royal Shimla Apples (1 kg)',
-      category: 'Fruits & Vegetables',
-      image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?auto=format&fit=crop&w=400&q=80',
-      typicalAppPrice: 195,
+      itemName: 'Royal Daawat Rozana Basmati Rice (5 kg)',
+      category: 'Daily Groceries',
+      image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=400&q=80',
+      typicalAppPrice: 440,
       shops: [
-        { name: 'Sharma Fresh Veggies & Fruits', price: 160, stock: 'Crisp Harvest (20 kg)', isBest: true, locality: 'Yevalewadi' },
+        { name: 'Apna Kirana & Daily Mart', price: 365, stock: 'Aged Grains (32 bags)', isBest: true, locality: 'Undri & Pisoli' },
+        { name: 'Khadakwasla Fresh Mart & Organics', price: 375, stock: 'In Stock (18 bags)', isBest: false, locality: 'Khadakwasla' },
+        { name: 'Green Grocers Supermarket', price: 380, stock: 'In Stock (20 bags)', isBest: false, locality: 'Khadakwasla' },
       ],
-      maxSavings: 'Save ₹35 (18% less than app prices)'
+      maxSavings: 'Save ₹75 (17% less than app prices)'
     },
     {
-      itemName: 'Braided 100W Fast Charging Cable',
+      itemName: 'Amul Taaza Homogenised Toned Milk (1 L)',
+      category: 'Daily Dairy',
+      image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&w=400&q=80',
+      typicalAppPrice: 75,
+      shops: [
+        { name: 'Khadakwasla Fresh Mart & Organics', price: 68, stock: 'Fresh Chilled (30 packs)', isBest: true, locality: 'Khadakwasla' },
+        { name: 'Green Grocers Supermarket', price: 70, stock: 'Daily Arrival (40 packs)', isBest: false, locality: 'Khadakwasla' },
+        { name: 'Apna Kirana & Daily Mart', price: 71, stock: 'In Stock (50 packs)', isBest: false, locality: 'Undri & Pisoli' },
+      ],
+      maxSavings: 'Save ₹7 per liter everyday'
+    },
+    {
+      itemName: 'Braided 100W Fast Charging Type-C to Type-C Cable',
       category: 'Electronics',
-      image: 'https://images.unsplash.com/photo-1608248597359-59749fb8c130?auto=format&fit=crop&w=400&q=80',
+      image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=400&q=80',
       typicalAppPrice: 499,
       shops: [
-        { name: 'City Electronics & Mobile Hub', price: 299, stock: 'In Stock (40 pcs)', isBest: true, locality: 'Wagholi' },
+        { name: 'Apex Gadgets & Tech Corner', price: 269, stock: 'In Stock (35 pcs)', isBest: true, locality: 'Yevalewadi' },
+        { name: 'City Electronics & Mobile Hub', price: 299, stock: 'In Stock (40 pcs)', isBest: false, locality: 'Wagholi' },
       ],
-      maxSavings: 'Save ₹200 (40% less than app prices)'
+      maxSavings: 'Save ₹230 (46% less than app prices)'
     }
   ];
 

@@ -397,7 +397,9 @@ app.get('/api/products', (req: Request, res: Response) => {
     let query = `
       SELECT p.*, s.name as shop_name, s.locality as shop_locality, s.slug as shop_slug,
              s.is_delivery_enabled, s.rating as shop_rating, c.name as category_name,
-             (p.stock_quantity - p.reserved_quantity) as available_stock
+             (p.stock_quantity - p.reserved_quantity) as available_stock,
+             (SELECT COUNT(*) FROM products p2 WHERE LOWER(TRIM(p2.name)) = LOWER(TRIM(p.name)) AND p2.is_active = 1) as shop_count,
+             (SELECT MIN(p2.price) FROM products p2 WHERE LOWER(TRIM(p2.name)) = LOWER(TRIM(p.name)) AND p2.is_active = 1) as lowest_market_price
       FROM products p
       JOIN shops s ON s.id = p.shop_id
       LEFT JOIN categories c ON c.id = p.category_id
@@ -446,7 +448,9 @@ app.get('/api/products', (req: Request, res: Response) => {
       products = db.prepare(`
         SELECT p.*, s.name as shop_name, s.locality as shop_locality, s.slug as shop_slug,
                s.is_delivery_enabled, s.rating as shop_rating, c.name as category_name,
-               (p.stock_quantity - p.reserved_quantity) as available_stock
+               (p.stock_quantity - p.reserved_quantity) as available_stock,
+               (SELECT COUNT(*) FROM products p2 WHERE LOWER(TRIM(p2.name)) = LOWER(TRIM(p.name)) AND p2.is_active = 1) as shop_count,
+               (SELECT MIN(p2.price) FROM products p2 WHERE LOWER(TRIM(p2.name)) = LOWER(TRIM(p.name)) AND p2.is_active = 1) as lowest_market_price
         FROM products p
         JOIN shops s ON s.id = p.shop_id
         LEFT JOIN categories c ON c.id = p.category_id
@@ -466,7 +470,7 @@ app.get('/api/products/:id', (req: Request, res: Response) => {
     const product = db.prepare(`
       SELECT p.*, s.name as shop_name, s.locality as shop_locality, s.address as shop_address,
              s.slug as shop_slug, s.whatsapp_number as shop_whatsapp, s.is_delivery_enabled,
-             s.delivery_charge, s.estimated_delivery_time, s.rating as shop_rating,
+             s.delivery_charge, s.estimated_delivery_time, s.rating as shop_rating, s.review_count as shop_review_count,
              c.name as category_name,
              (p.stock_quantity - p.reserved_quantity) as available_stock
       FROM products p
@@ -479,18 +483,82 @@ app.get('/api/products/:id', (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Product not found.' });
     }
 
-    // Find other shops selling identical or similar items for price comparison
-    const otherSellers = db.prepare(`
-      SELECT p.id as product_id, p.price, p.mrp, p.unit,
-             (p.stock_quantity - p.reserved_quantity) as available_stock,
-             s.id as shop_id, s.name as shop_name, s.locality as shop_locality,
-             s.rating as shop_rating, s.delivery_charge, s.estimated_delivery_time,
+    // Find all sellers selling identical product
+    const exactMatches = db.prepare(`
+      SELECT p.id as product_id, p.price, p.mrp, p.unit, p.name as product_name, p.image_url,
+             p.stock_quantity, p.reserved_quantity, (p.stock_quantity - p.reserved_quantity) as available_stock,
+             s.id as shop_id, s.name as shop_name, s.locality as shop_locality, s.address as shop_address,
+             s.rating as shop_rating, s.review_count as shop_review_count,
+             s.delivery_charge, s.estimated_delivery_time, s.min_order_amount,
              s.is_delivery_enabled, s.slug as shop_slug
       FROM products p
       JOIN shops s ON s.id = p.shop_id
-      WHERE p.name LIKE ? AND p.id != ? AND p.is_active = 1
+      WHERE LOWER(TRIM(p.name)) = LOWER(TRIM(?)) AND p.is_active = 1
       ORDER BY p.price ASC
-    `).all(`%${product.name.split(' ')[0]}%`, product.id);
+    `).all(product.name) as any[];
+
+    // Fallback if only 1 seller found, look for similar items in same category
+    let comparisonList = exactMatches;
+    let isBroadComparison = false;
+    if (comparisonList.length <= 1) {
+      const broadMatches = db.prepare(`
+        SELECT p.id as product_id, p.price, p.mrp, p.unit, p.name as product_name, p.image_url,
+               p.stock_quantity, p.reserved_quantity, (p.stock_quantity - p.reserved_quantity) as available_stock,
+               s.id as shop_id, s.name as shop_name, s.locality as shop_locality, s.address as shop_address,
+               s.rating as shop_rating, s.review_count as shop_review_count,
+               s.delivery_charge, s.estimated_delivery_time, s.min_order_amount,
+               s.is_delivery_enabled, s.slug as shop_slug
+        FROM products p
+        JOIN shops s ON s.id = p.shop_id
+        WHERE p.category_id = ? AND p.id != ? AND p.is_active = 1
+        ORDER BY p.price ASC
+        LIMIT 6
+      `).all(product.category_id, product.id) as any[];
+
+      if (broadMatches.length > 0) {
+        comparisonList = [...exactMatches, ...broadMatches];
+        isBroadComparison = true;
+      }
+    }
+
+    const prices = comparisonList.map(s => s.price);
+    const lowestPrice = prices.length ? Math.min(...prices) : product.price;
+    const highestPrice = prices.length ? Math.max(...prices) : product.price;
+    const maxSavings = Math.max(0, highestPrice - lowestPrice);
+
+    // Compute lowest total (price + delivery charge)
+    const totalsWithDelivery = comparisonList.map(s => s.price + (s.delivery_charge || 0));
+    const lowestTotal = totalsWithDelivery.length ? Math.min(...totalsWithDelivery) : (product.price + (product.delivery_charge || 0));
+
+    const allSellers = comparisonList.map(s => {
+      const isCurrent = s.product_id === product.id;
+      const isLowestPrice = s.price === lowestPrice;
+      const totalWithDelivery = s.price + (s.delivery_charge || 0);
+      const isLowestTotal = totalWithDelivery === lowestTotal;
+      const savingsVsHighest = Math.max(0, highestPrice - s.price);
+      return {
+        ...s,
+        isCurrent,
+        isLowestPrice,
+        isLowestTotal,
+        totalWithDelivery,
+        savingsVsHighest,
+      };
+    });
+
+    const otherSellers = allSellers.filter(s => s.product_id !== product.id);
+
+    const comparison = {
+      isExactMatch: !isBroadComparison,
+      totalSellers: allSellers.length,
+      lowestPrice,
+      highestPrice,
+      maxSavings,
+      lowestTotal,
+      currentShopIsCheapest: product.price === lowestPrice,
+      savingsIfSwitched: Math.max(0, product.price - lowestPrice),
+      allSellers,
+    };
 
     const reviews = db.prepare(`
       SELECT r.*
@@ -500,7 +568,58 @@ app.get('/api/products/:id', (req: Request, res: Response) => {
       LIMIT 10
     `).all(product.id);
 
-    return res.json({ product, otherSellers, reviews });
+    return res.json({ product, otherSellers, comparison, reviews });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// Compare prices for any product by ID or Name
+app.get('/api/products/:id/compare', (req: Request, res: Response) => {
+  try {
+    const product = db.prepare(`
+      SELECT p.*, s.name as shop_name, s.locality as shop_locality, s.delivery_charge
+      FROM products p
+      JOIN shops s ON s.id = p.shop_id
+      WHERE p.id = ?
+    `).get(req.params.id) as any;
+
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found.' });
+    }
+
+    const sellers = db.prepare(`
+      SELECT p.id as product_id, p.price, p.mrp, p.unit, p.name as product_name, p.image_url,
+             (p.stock_quantity - p.reserved_quantity) as available_stock,
+             s.id as shop_id, s.name as shop_name, s.locality as shop_locality,
+             s.rating as shop_rating, s.delivery_charge, s.estimated_delivery_time,
+             s.is_delivery_enabled, s.slug as shop_slug
+      FROM products p
+      JOIN shops s ON s.id = p.shop_id
+      WHERE LOWER(TRIM(p.name)) = LOWER(TRIM(?)) AND p.is_active = 1
+      ORDER BY p.price ASC
+    `).all(product.name) as any[];
+
+    const prices = sellers.map(s => s.price);
+    const lowestPrice = prices.length ? Math.min(...prices) : product.price;
+    const highestPrice = prices.length ? Math.max(...prices) : product.price;
+
+    const allSellers = sellers.map(s => ({
+      ...s,
+      isCurrent: s.product_id === product.id,
+      isLowestPrice: s.price === lowestPrice,
+      totalWithDelivery: s.price + (s.delivery_charge || 0),
+      savingsVsHighest: Math.max(0, highestPrice - s.price),
+    }));
+
+    return res.json({
+      productName: product.name,
+      currentProductId: product.id,
+      lowestPrice,
+      highestPrice,
+      maxSavings: highestPrice - lowestPrice,
+      sellers: allSellers,
+    });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }

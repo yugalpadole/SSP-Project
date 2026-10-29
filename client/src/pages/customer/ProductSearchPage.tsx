@@ -24,7 +24,7 @@ export const ProductSearchPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'All');
   const [selectedLocality, setSelectedLocality] = useState(searchParams.get('locality') || currentLocality.name);
-  const [maxPrice, setMaxPrice] = useState<number>(1500);
+  const [maxPrice, setMaxPrice] = useState<number>(2500);
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [sortBy, setSortBy] = useState<'price_asc' | 'price_desc' | 'popular'>('popular');
   const [isLoading, setIsLoading] = useState(true);
@@ -48,7 +48,7 @@ export const ProductSearchPage: React.FC = () => {
         if (searchTerm.trim()) params.append('search', searchTerm.trim());
         if (selectedCategory !== 'All') params.append('category', selectedCategory);
         if (selectedLocality !== 'All') params.append('locality', selectedLocality);
-        if (maxPrice < 1500) params.append('maxPrice', String(maxPrice));
+        if (maxPrice < 2500) params.append('maxPrice', String(maxPrice));
         if (onlyInStock) params.append('inStock', 'true');
 
         const res = await fetch(`/api/products?${params.toString()}`);
@@ -77,7 +77,7 @@ export const ProductSearchPage: React.FC = () => {
     setSearchTerm('');
     setSelectedCategory('All');
     setSelectedLocality('All');
-    setMaxPrice(1500);
+    setMaxPrice(2500);
     setOnlyInStock(false);
     setSortBy('popular');
   };
@@ -172,7 +172,7 @@ export const ProductSearchPage: React.FC = () => {
             <input
               type="range"
               min="20"
-              max="1500"
+              max="2500"
               step="20"
               value={maxPrice}
               onChange={(e) => setMaxPrice(Number(e.target.value))}

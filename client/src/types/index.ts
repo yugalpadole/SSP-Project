@@ -70,7 +70,47 @@ export interface Product {
   is_delivery_enabled?: number | boolean;
   delivery_charge?: number;
   estimated_delivery_time?: string;
+  shop_count?: number;
+  lowest_market_price?: number;
   created_at?: string;
+}
+
+export interface ProductSeller {
+  product_id: number;
+  price: number;
+  mrp: number;
+  unit: string;
+  product_name: string;
+  image_url?: string;
+  available_stock: number;
+  shop_id: number;
+  shop_name: string;
+  shop_locality: string;
+  shop_address?: string;
+  shop_rating: number;
+  shop_review_count?: number;
+  delivery_charge: number;
+  estimated_delivery_time: string;
+  min_order_amount?: number;
+  is_delivery_enabled: number | boolean;
+  shop_slug: string;
+  isCurrent?: boolean;
+  isLowestPrice?: boolean;
+  isLowestTotal?: boolean;
+  totalWithDelivery?: number;
+  savingsVsHighest?: number;
+}
+
+export interface ProductComparison {
+  isExactMatch: boolean;
+  totalSellers: number;
+  lowestPrice: number;
+  highestPrice: number;
+  maxSavings: number;
+  lowestTotal?: number;
+  currentShopIsCheapest: boolean;
+  savingsIfSwitched: number;
+  allSellers: ProductSeller[];
 }
 
 export interface CartItem {
